@@ -50,7 +50,7 @@ func main() {
 	// 翻訳する
 	translated, err := translate.Translate(t)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	// 翻訳結果を標準出力する
