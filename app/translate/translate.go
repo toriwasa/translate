@@ -22,16 +22,14 @@ func getAPIKey() (string, error) {
 	return apiKey, nil
 }
 
-// ChatpGPT APIにPOSTリクエストする
-func requestChatGPT(text string) (string, error) {
+// リクエスト用の構造体を生成する
+func newRequest(text string) completion.Request {
 	// ChatGPT APIに翻訳を依頼する文字列を生成する
-	q := fmt.Sprintf("Translate this into Japanese. \n\n %s", text)
-	// 依頼文字列をログに出力する
+	q := fmt.Sprintf("Translate this into Japanese. \n\n%s", text)
 	log.Printf("q: %s", q)
 
-	// 以下のJSONをバイト文字列としてリクエストボディに設定する
-	// {"model": "gpt-3.5-turbo-1106", "messages": [{"role": "user", "content": q}] }
-	jsonBytes, err := json.Marshal(completion.Request{
+	// リクエスト用の構造体を生成する
+	req := completion.Request{
 		Model: "gpt-3.5-turbo-1106",
 		Messages: []completion.Messages{
 			{
@@ -39,28 +37,42 @@ func requestChatGPT(text string) (string, error) {
 				Content: q,
 			},
 		},
-	})
-	if err != nil {
-		return "", err
 	}
 
-	// https://api.openai.com/v1/chat/completions エンドポイントにPOSTリクエストする
-	// HTTPリクエストを作成する
-	req, err := http.NewRequest("POST", "https://api.openai.com/v1/chat/completions", bytes.NewBuffer(jsonBytes))
+	// リクエスト用の構造体を返す
+	return req
+}
+
+// APIリクエスト用の http.Request を生成する
+func newHTTPRequest(req completion.Request, apiKey string) (*http.Request, error) {
+	// リクエスト用の構造体をJSONに変換する
+	jsonBytes, err := json.Marshal(req)
 	if err != nil {
-		return "", err
+		return nil, err
+	}
+
+	// JSONをバイト文字列としてリクエストボディに設定する
+	body := bytes.NewBuffer(jsonBytes)
+
+	// Chat Completion APIのエンドポイントへのPOSTリクエストオブジェクトを生成する
+	httpReq, err := http.NewRequest("POST", "https://api.openai.com/v1/chat/completions", body)
+	if err != nil {
+		return nil, err
 	}
 
 	// ヘッダーに Content-Type: application/json を設定する
-	req.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("Content-Type", "application/json")
 
 	// ヘッダーに Authorization: Bearer apiKey を設定する
-	apiKey, err := getAPIKey()
-	if err != nil {
-		return "", err
-	}
 	authToken := fmt.Sprintf("Bearer %s", apiKey)
-	req.Header.Set("Authorization", authToken)
+	httpReq.Header.Set("Authorization", authToken)
+
+	// HTTPリクエストを返す
+	return httpReq, nil
+}
+
+// ChatpGPT APIにPOSTリクエストする
+func requestChatGPT(req *http.Request) (string, error) {
 
 	// HTTPリクエストを実行する
 	client := &http.Client{}
@@ -115,5 +127,26 @@ func requestChatGPT(text string) (string, error) {
 // Translate は引数で与えられた文字列を日本語に翻訳して返す
 // 翻訳に失敗した場合はエラーを返す
 func Translate(text string) (string, error) {
-	return requestChatGPT(text)
+	// APIキーを取得する
+	apiKey, err := getAPIKey()
+	if err != nil {
+		return "", err
+	}
+
+	// リクエスト用の構造体を生成する
+	req := newRequest(text)
+	httpReq, error := newHTTPRequest(req, apiKey)
+	if err != nil {
+		return "", error
+	}
+
+	// ChatGPT APIにPOSTリクエストする
+	translated, err := requestChatGPT(httpReq)
+	if err != nil {
+		return "", err
+	}
+
+	// 翻訳結果を返す
+	return translated, nil
+
 }
