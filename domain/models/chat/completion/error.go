@@ -1,5 +1,7 @@
 package completion
 
+import "fmt"
+
 // 以下のJSONを元に構造体を定義する
 // {
 //     "error": {
@@ -17,6 +19,11 @@ type ErrorDetail struct {
 	Code    string `json:"code"`
 }
 
-type Error struct {
-	Error ErrorDetail `json:"error"`
+type CompletionError struct {
+	Detail ErrorDetail `json:"error"`
+}
+
+// error 型として扱えるように Error() メソッドを実装する
+func (e CompletionError) Error() string {
+	return fmt.Sprintf("CompletionError: {message: %s, type: %s, param: %s, code: %s}", e.Detail.Message, e.Detail.Type, e.Detail.Param, e.Detail.Code)
 }
