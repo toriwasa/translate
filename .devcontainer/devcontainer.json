@@ -1,0 +1,24 @@
+{
+    "name": "golang-workspace",
+    "dockerComposeFile": [
+        "docker-compose.dev.yml"
+    ],
+    "service": "golang-dev",
+    "postCreateCommand": [
+        "bash",
+        ".devcontainer/postCreateCommand.sh"
+    ],
+    "workspaceFolder": "/workspace",
+    "customizations": {
+        "vscode": {
+          "extensions": [
+                "golang.go",
+                "GitHub.copilot",
+                "mhutchie.git-graph",
+                "eamodio.gitlens",
+                "seatonjiang.gitmoji-vscode",
+                "GitHub.vscode-github-actions"
+            ]
+        }
+    }
+}
