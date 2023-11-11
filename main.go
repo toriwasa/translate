@@ -29,8 +29,8 @@ func main() {
 
 	// --help オプションをカスタマイズする
 	flag.Usage = func() {
-		println("Usage: translate -t <translate target text> -v")
-		println("Example: translate -t \"Target Text\" -v")
+		println("Usage: translate -t <translate target text>")
+		println("Example: translate -t \"Target Text\"")
 		println("Description: translate Text to Japanese")
 		println("Options:")
 		flag.PrintDefaults()
