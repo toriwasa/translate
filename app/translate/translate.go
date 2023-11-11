@@ -22,14 +22,14 @@ func getAPIKey() (string, error) {
 	return apiKey, nil
 }
 
-// リクエスト用の構造体を生成する
-func newRequest(text string) completion.Request {
+// モデル応答を生成するための構造体を生成する
+func newCreate(text string) completion.Create {
 	// ChatGPT APIに翻訳を依頼する文字列を生成する
 	q := fmt.Sprintf("Translate this into Japanese. \n\n%s", text)
 	log.Printf("q: %s", q)
 
-	// リクエスト用の構造体を生成する
-	req := completion.Request{
+	// モデル応答を生成するための構造体を生成する
+	create := completion.Create{
 		Model: "gpt-3.5-turbo-1106",
 		Messages: []completion.Messages{
 			{
@@ -40,13 +40,13 @@ func newRequest(text string) completion.Request {
 	}
 
 	// リクエスト用の構造体を返す
-	return req
+	return create
 }
 
-// APIリクエスト用の http.Request を生成する
-func newHTTPRequest(req completion.Request, apiKey string) (*http.Request, error) {
-	// リクエスト用の構造体をJSONに変換する
-	jsonBytes, err := json.Marshal(req)
+// Chat Completion APIリクエスト用の http.Request を生成する
+func newRequest(create completion.Create, apiKey string) (*http.Request, error) {
+	// モデル応答生成用の構造体をバイト型JSONに変換する
+	jsonBytes, err := json.Marshal(create)
 	if err != nil {
 		return nil, err
 	}
@@ -55,73 +55,62 @@ func newHTTPRequest(req completion.Request, apiKey string) (*http.Request, error
 	body := bytes.NewBuffer(jsonBytes)
 
 	// Chat Completion APIのエンドポイントへのPOSTリクエストオブジェクトを生成する
-	httpReq, err := http.NewRequest("POST", "https://api.openai.com/v1/chat/completions", body)
+	req, err := http.NewRequest("POST", "https://api.openai.com/v1/chat/completions", body)
 	if err != nil {
 		return nil, err
 	}
 
 	// ヘッダーに Content-Type: application/json を設定する
-	httpReq.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Content-Type", "application/json")
 
 	// ヘッダーに Authorization: Bearer apiKey を設定する
 	authToken := fmt.Sprintf("Bearer %s", apiKey)
-	httpReq.Header.Set("Authorization", authToken)
+	req.Header.Set("Authorization", authToken)
 
 	// HTTPリクエストを返す
-	return httpReq, nil
+	return req, nil
 }
 
-// ChatpGPT APIにPOSTリクエストする
-func requestChatGPT(req *http.Request) (string, error) {
-
+// Chat Completion APIへのリクエストを実行する
+func createChatCompletionHttpRequest(req *http.Request) (*http.Response, error) {
 	// HTTPリクエストを実行する
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
+	return resp, nil
+}
 
-	// ステータスコードをログに出力する
-	log.Printf("status: %s", resp.Status)
-
+// APIへのリクエスト結果JSONを構造体に変換する
+func convertResponseToStruct(resp *http.Response) (completion.Result, error) {
 	// HTTPレスポンスを読み込む
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", err
+		return completion.Result{}, err
 	}
-
-	// レスポンスボディをログに出力する
-	log.Printf("body: %s", body)
 
 	// ステータスコードが 200 以外の場合はエラーを返す
 	if resp.StatusCode != http.StatusOK {
-		// レスポンスJSONを構造体に変換する
-		var result completion.Error
-		err = json.Unmarshal(body, &result)
+		// エラーレスポンスJSONを構造体に変換する
+		var completionError completion.CompletionError
+		err = json.Unmarshal(body, &completionError)
 		if err != nil {
-			return "", err
+			return completion.Result{}, err
 		}
-
-		// 構造体の中身をログに出力する
-		log.Printf("errorResult: %+v", result)
-
-		// 構造体に含まれるエラーメッセージを返す
-		return "", fmt.Errorf("errorResult: %+v", result)
+		// エラー構造体を返す
+		return completion.Result{}, completionError
 	}
 
-	// レスポンスJSONを意図した結果の構造体に変換する
+	// ステータスコードが 200 の場合は正常レスポンスJSONを構造体に変換する
 	var result completion.Result
 	err = json.Unmarshal(body, &result)
 	if err != nil {
-		return "", err
+		return completion.Result{}, err
 	}
 
-	// 構造体の中身をログに出力する
-	log.Printf("chatCompletion: %+v", result)
-
-	// 構造体に含まれる翻訳結果を返す
-	return result.Choices[0].Message.Content, nil
-
+	// 構造体を返す
+	return result, nil
 }
 
 // Translate は引数で与えられた文字列を日本語に翻訳して返す
@@ -134,19 +123,25 @@ func Translate(text string) (string, error) {
 	}
 
 	// リクエスト用の構造体を生成する
-	req := newRequest(text)
-	httpReq, error := newHTTPRequest(req, apiKey)
+	create := newCreate(text)
+	httpReq, error := newRequest(create, apiKey)
 	if err != nil {
 		return "", error
 	}
 
 	// ChatGPT APIにPOSTリクエストする
-	translated, err := requestChatGPT(httpReq)
+	res, err := createChatCompletionHttpRequest(httpReq)
+	if err != nil {
+		return "", err
+	}
+
+	// リクエスト結果を構造体に変換する
+	result, err := convertResponseToStruct(res)
 	if err != nil {
 		return "", err
 	}
 
 	// 翻訳結果を返す
-	return translated, nil
+	return result.Choices[0].Message.Content, nil
 
 }
