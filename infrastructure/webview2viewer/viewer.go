@@ -32,7 +32,7 @@ func OpenFileWithWebview2(filePath string) error {
 		w.Destroy()
 	})
 
-	// ESC, Enter, Spaceキーでウィンドウを閉じる
+	// ESC, Enter, Spaceキーでウィンドウを閉じる機能を追加する
 	w.Init(`
 	document.addEventListener("keydown", function(event) {
 		if (event.keyCode === 27 // ESC
