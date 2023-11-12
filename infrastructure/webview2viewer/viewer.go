@@ -8,6 +8,7 @@ import (
 
 // 指定されたファイルをwebview2で開く
 func OpenFileWithWebview2(filePath string) error {
+	// WebView2オブジェクトを生成する
 	w := webview2.NewWithOptions(webview2.WebViewOptions{
 		Debug:     true,
 		AutoFocus: true,
@@ -22,9 +23,16 @@ func OpenFileWithWebview2(filePath string) error {
 	if w == nil {
 		log.Fatalln("Failed to load webview.")
 	}
+	// 関数を抜けたらWebView2オブジェクトを破棄する
 	defer w.Destroy()
+
+	// WebView2オブジェクトのウィンドウサイズを設定する
 	w.SetSize(800, 600, webview2.HintFixed)
+
+	// 指定されたファイルパスをURLに変換する
 	url := "file:///" + filePath
+
+	// WebView2オブジェクトで指定されたURLを開く
 	w.Navigate(url)
 
 	// WebView2のウィンドウを閉じる関数をJavaScriptに公開する
@@ -44,6 +52,7 @@ func OpenFileWithWebview2(filePath string) error {
 	});
 	`)
 
+	// WebView2オブジェクトを起動する
 	w.Run()
 
 	return nil
