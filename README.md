@@ -1,6 +1,6 @@
 # README
 
-[![release](https://github.com/toriwasa/translate/actions/workflows/release.yml/badge.svg)](https://github.com/toriwasa/translate/actions/workflows/release.yml)
+[![release](https://github.com/toriwasa/translate/actions/workflows/release.yml/badge.svg?branch=master&event=release)](https://github.com/toriwasa/translate/actions/workflows/release.yml)
 
 ## What's This?
 - ChatGPT API にアクセスして、指定した文字列を日本語に翻訳した結果を返すCLIツール
