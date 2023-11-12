@@ -2,11 +2,13 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"io"
 	"log"
+	"os"
 
+	"github.com/toriwasa/translate/app/htmlgenerator"
 	"github.com/toriwasa/translate/app/translate"
+	"github.com/toriwasa/translate/infrastructure/webview2viewer"
 )
 
 func main() {
@@ -53,7 +55,34 @@ func main() {
 		panic(err)
 	}
 
-	// 翻訳結果を標準出力する
-	fmt.Printf("translated: %s\n", translated)
+	// 一時ディレクトリパスを取得する
+	tempDir := os.TempDir()
 
+	// 一時ファイルを生成する
+	// webview2でHTMLとして表示するために拡張子を .html にする
+	tempFile, err := os.CreateTemp(tempDir, "translated*.html")
+	if err != nil {
+		panic(err)
+	}
+	defer tempFile.Close()
+	defer os.Remove(tempFile.Name())
+
+	// HTMLGeneratorを生成する
+	g := htmlgenerator.NewHTMLGenerator(t, translated, tempFile)
+
+	// HTMLGeneratorが保持する情報を元にHTMLを生成する
+	err = g.Generate()
+	if err != nil {
+		panic(err)
+	}
+
+	// 一時ファイルのパスを取得する
+	tempFilePath := tempFile.Name()
+	log.Printf("tempFilePath: %s", tempFilePath)
+
+	// 一時ファイルを閲覧する
+	err = webview2viewer.OpenFileWithWebview2(tempFilePath)
+	if err != nil {
+		panic(err)
+	}
 }
