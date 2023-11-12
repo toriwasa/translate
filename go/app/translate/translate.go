@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/toriwasa/translate/domain/models/chat/completion"
+	"github.com/toriwasa/translate/go/domain/models/chat/completion"
 )
 
 // 環境変数 OPENAI_API_KEY から ChatGPT API の APIキーを取得する

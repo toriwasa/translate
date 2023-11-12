@@ -1,7 +1,7 @@
 project_name: translate
 builds:
   - env: [CGO_ENABLED=0]
-    main: ./main.go
+    main: ./go/main.go
     goos:
       - windows
     goarch:

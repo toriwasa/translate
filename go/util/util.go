@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/atotto/clipboard"
-	"github.com/toriwasa/translate/app/translate"
+	"github.com/toriwasa/translate/go/app/translate"
 )
 
 // Dry Run モードを考慮して翻訳結果を生成する

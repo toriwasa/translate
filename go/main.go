@@ -7,9 +7,9 @@ import (
 	"os"
 
 	"github.com/jchv/go-webview2"
-	"github.com/toriwasa/translate/app/htmlgenerator"
-	"github.com/toriwasa/translate/infrastructure/webview"
-	"github.com/toriwasa/translate/util"
+	"github.com/toriwasa/translate/go/app/htmlgenerator"
+	"github.com/toriwasa/translate/go/infrastructure/webview"
+	"github.com/toriwasa/translate/go/util"
 )
 
 func main() {
