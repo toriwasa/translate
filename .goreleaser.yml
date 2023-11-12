@@ -13,9 +13,9 @@ archives:
   - format_overrides:
     - goos: windows
       format: zip
-  - files:
+    files:
       - LICENSE*
       - README*
       - src: ahk/translate.ahk
-        dest: translate.ahk
+        dst: translate.ahk
         strip_parent: true
