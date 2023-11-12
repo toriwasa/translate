@@ -28,28 +28,15 @@ func NewHTMLGenerator(target, translated string, writer io.Writer) HTMLGenerator
 
 // Generate は HTMLGenerator が保持する情報を元にHTMLを生成する
 func (g HTMLGenerator) Generate() error {
-	// HTMLテンプレート定義
-	const html = `<!DOCTYPE html>
-<html>
-<head>
-    <title>翻訳結果表示画面</title>
-</head>
-<body>
-    <h2>翻訳対象文字列</h2>
-    <p>{{ .Target }}</p>
-	<hr>
-    <h2>翻訳結果文字列</h2>
-    <p>{{ .Translated }}</p>
-</body>
-</html>
-`
-
 	// テンプレートオブジェクトを生成する
-	t := template.New("translatedResult")
+	t := template.New("translateResult")
+
+	// テンプレート定義ファイルパスを定義する
+	templateFilePath := "app/htmlgenerator/translate_result.html"
 
 	// テンプレートオブジェクトにHTMLテンプレートのパース結果を上書きする
 	// tへの副作用が発生する
-	t, err := t.Parse(html)
+	t, err := t.ParseFiles(templateFilePath)
 	if err != nil {
 		return err
 	}
