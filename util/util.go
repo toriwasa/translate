@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/atotto/clipboard"
 	"github.com/toriwasa/translate/app/htmlgenerator"
 	"github.com/toriwasa/translate/app/translate"
 	"github.com/toriwasa/translate/infrastructure/webview2viewer"
@@ -56,4 +57,14 @@ func ShowTranslatedWithWebview2(target, translated string) error {
 		return err
 	}
 	return nil
+}
+
+// クリップボードの内容を取得する
+func GetClipBoardText() (string, error) {
+	// クリップボードの内容を取得する
+	clipBoardText, err := clipboard.ReadAll()
+	if err != nil {
+		return "", err
+	}
+	return clipBoardText, nil
 }

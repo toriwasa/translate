@@ -18,7 +18,8 @@
                 "eamodio.gitlens",
                 "seatonjiang.gitmoji-vscode",
                 "GitHub.vscode-github-actions",
-                "ms-vscode.live-server"
+                "ms-vscode.live-server",
+                "thqby.vscode-autohotkey2-lsp"
             ]
         }
     }
