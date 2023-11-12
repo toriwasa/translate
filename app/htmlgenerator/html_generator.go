@@ -1,11 +1,15 @@
 package htmlgenerator
 
 import (
+	"embed"
 	"html/template"
 	"io"
 )
 
-// HTMLGenerator は html/template パッケージを使ってHTMLを生成する
+// HTMLテンプレートファイルをビルド時に埋め込む
+//
+//go:embed translate_result.html
+var embedFileSystem embed.FS
 
 // 生成内容を表す構造体
 type HTMLGenerator struct {
@@ -31,12 +35,12 @@ func (g HTMLGenerator) Generate() error {
 	// テンプレートオブジェクトを生成する
 	t := template.New("translateResult")
 
-	// テンプレート定義ファイルパスを定義する
-	templateFilePath := "app/htmlgenerator/translate_result.html"
+	// 埋め込んだHTMLテンプレート定義を読み込む
+	templateFile, _ := embedFileSystem.ReadFile("translate_result.html")
 
 	// テンプレートオブジェクトにHTMLテンプレートのパース結果を上書きする
 	// tへの副作用が発生する
-	t, err := t.ParseFiles(templateFilePath)
+	t, err := t.Parse(string(templateFile))
 	if err != nil {
 		return err
 	}
