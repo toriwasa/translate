@@ -4,7 +4,10 @@ import (
 	"flag"
 	"io"
 	"log"
+	"os"
 
+	"github.com/jchv/go-webview2"
+	"github.com/toriwasa/translate/app/htmlgenerator"
 	"github.com/toriwasa/translate/util"
 )
 
@@ -66,16 +69,96 @@ func main() {
 		targetText = clipBoardText
 	}
 
-	// DryRunモードを考慮して翻訳結果を生成する
-	translated, err := util.GenerateTranslated(targetText, isDryRun)
+	// 結果待機用の一時ファイルを生成する
+	loadingHTMLFile, err := util.CreateTempFile()
+	if err != nil {
+		panic(err)
+	}
+	defer loadingHTMLFile.Close()
+	defer os.Remove(loadingHTMLFile.Name())
+	log.Printf("loadingHTMLFile: %s", loadingHTMLFile.Name())
+
+	// 結果待機用の htmlgenerator を生成する
+	loadingHTMLGenerator := htmlgenerator.NewHTMLGenerator(targetText, "翻訳結果を取得中...", loadingHTMLFile)
+
+	// HTMLGeneratorが保持する情報を元にHTMLを生成する
+	err = loadingHTMLGenerator.Generate()
 	if err != nil {
 		panic(err)
 	}
 
-	// 翻訳結果をwebview2で表示する
-	err = util.ShowTranslatedWithWebview2(targetText, translated)
-	if err != nil {
-		panic(err)
+	// 結果待機用のWebview2を起動する
+	// WebView2オブジェクトを生成する
+	w := webview2.NewWithOptions(webview2.WebViewOptions{
+		Debug:     true,
+		AutoFocus: true,
+		WindowOptions: webview2.WindowOptions{
+			Title:  "Translate Result",
+			Width:  800,
+			Height: 600,
+			IconId: 2, // icon resource id
+			Center: true,
+		},
+	})
+	if w == nil {
+		panic("failed to load webview")
 	}
+
+	// WebView2オブジェクトのウィンドウサイズを変更不可能にする設定を追加する
+	// w.SetSize(800, 600, webview2.HintFixed)
+
+	// WebView2オブジェクトで指定されたHTMLを開く
+	w.Navigate(loadingHTMLFile.Name())
+
+	// WebView2のウィンドウを閉じる関数をJavaScriptに公開する
+	w.Bind("closeWebView", func() {
+		w.Destroy()
+	})
+
+	// ESC, Enter, Spaceキーでウィンドウを閉じる機能を追加する
+	w.Init(`
+	document.addEventListener("keydown", function(event) {
+		if (event.keyCode === 27 // ESC
+			|| event.keyCode === 13  // Enter
+			|| event.keyCode === 32 // Space
+		) {
+			closeWebView(); // Goの関数を呼び出す
+		}
+	});
+	`)
+
+	// 別スレッドで翻訳処理を実行する
+	go func() {
+		// 翻訳結果表示用の一時ファイルを生成する
+		translatedHTMLFile, err := util.CreateTempFile()
+		if err != nil {
+			panic(err)
+		}
+		defer translatedHTMLFile.Close()
+		defer os.Remove(translatedHTMLFile.Name())
+		log.Printf("translatedHTMLFile: %s", translatedHTMLFile.Name())
+
+		// DryRunモードを考慮して翻訳結果を生成する
+		translated, err := util.GenerateTranslated(targetText, isDryRun)
+		if err != nil {
+			panic(err)
+		}
+
+		// 翻訳結果用の htmlgenerator を生成する
+		resultHTMLGenerator := htmlgenerator.NewHTMLGenerator(targetText, translated, translatedHTMLFile)
+		// HTMLGeneratorが保持する情報を元にHTMLを生成する
+		err = resultHTMLGenerator.Generate()
+		if err != nil {
+			panic(err)
+		}
+
+		// WebView2で翻訳結果HTMLに遷移する
+		w.Dispatch(func() {
+			w.Navigate(translatedHTMLFile.Name())
+		})
+	}()
+
+	// WebView2オブジェクトを起動する
+	w.Run()
 
 }
