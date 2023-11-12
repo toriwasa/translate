@@ -13,3 +13,11 @@ archives:
   - format_overrides:
     - goos: windows
       format: zip
+  - files:
+      - LICENSE*
+      - README*
+      - src: ahk/translate.ahk
+        dest: translate.ahk
+    format_overrides:
+      - goos: windows
+        format: zip
