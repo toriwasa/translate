@@ -16,6 +16,4 @@ archives:
     files:
       - LICENSE*
       - README*
-      - src: ahk/translate.ahk
-        dst: translate.ahk
-        strip_parent: true
+      - ahk/translate.ahk
