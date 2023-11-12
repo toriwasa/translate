@@ -8,6 +8,7 @@ import (
 
 	"github.com/jchv/go-webview2"
 	"github.com/toriwasa/translate/app/htmlgenerator"
+	"github.com/toriwasa/translate/infrastructure/webview"
 	"github.com/toriwasa/translate/util"
 )
 
@@ -103,6 +104,7 @@ func main() {
 	if w == nil {
 		panic("failed to load webview")
 	}
+	manager := webview.NewWebViewManager(w)
 
 	// WebView2オブジェクトのウィンドウサイズを変更不可能にする設定を追加する
 	// w.SetSize(800, 600, webview2.HintFixed)
@@ -112,7 +114,7 @@ func main() {
 
 	// WebView2のウィンドウを閉じる関数をJavaScriptに公開する
 	w.Bind("closeWebView", func() {
-		w.Destroy()
+		manager.Kill()
 	})
 
 	// ESC, Enter, Spaceキーでウィンドウを閉じる機能を追加する
@@ -153,6 +155,10 @@ func main() {
 		}
 
 		// WebView2で翻訳結果HTMLに遷移する
+		// WebView2オブジェクトが終了している場合は何もしない
+		if !manager.IsAlive() {
+			return
+		}
 		w.Dispatch(func() {
 			w.Navigate(translatedHTMLFile.Name())
 		})
