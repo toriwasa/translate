@@ -6,8 +6,6 @@ import (
 	"io"
 )
 
-// HTMLテンプレートファイルをビルド時に埋め込む
-//
 //go:embed translate_result.html
 var embedFileSystem embed.FS
 
@@ -32,15 +30,17 @@ func NewHTMLGenerator(target, translated string, writer io.Writer) HTMLGenerator
 
 // Generate は HTMLGenerator が保持する情報を元にHTMLを生成する
 func (g HTMLGenerator) Generate() error {
-	// テンプレートオブジェクトを生成する
-	t := template.New("translateResult")
+	// 基礎となるテンプレートオブジェクトを生成する
+	baseTemplate := template.New("translateResult")
 
-	// 埋め込んだHTMLテンプレート定義を読み込む
-	templateFile, _ := embedFileSystem.ReadFile("translate_result.html")
+	// 埋め込みファイルシステム経由でHTMLテンプレート定義を読み込む
+	templateFile, err := embedFileSystem.ReadFile("translate_result.html")
+	if err != nil {
+		return err
+	}
 
-	// テンプレートオブジェクトにHTMLテンプレートのパース結果を上書きする
-	// tへの副作用が発生する
-	t, err := t.Parse(string(templateFile))
+	// HTMLテンプレート定義を元にした新しいテンプレートオブジェクトを生成する
+	t, err := baseTemplate.Parse(string(templateFile))
 	if err != nil {
 		return err
 	}
