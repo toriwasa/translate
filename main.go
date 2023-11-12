@@ -4,11 +4,8 @@ import (
 	"flag"
 	"io"
 	"log"
-	"os"
 
-	"github.com/toriwasa/translate/app/htmlgenerator"
-	"github.com/toriwasa/translate/app/translate"
-	"github.com/toriwasa/translate/infrastructure/webview2viewer"
+	"github.com/toriwasa/translate/util"
 )
 
 func main() {
@@ -53,47 +50,17 @@ func main() {
 	// コマンドライン引数を出力する
 	log.Printf("t: %s, isDryRun: %t isVerbose: %t", t, isDryRun, isVerbose)
 
-	// dry run モードの場合は仮の翻訳結果を表示する
-	var translated string
-	if isDryRun {
-		translated = "dry run モード 翻訳結果"
-	} else {
-		// 翻訳する
-		tmpTranslated, err := translate.Translate(t)
-		if err != nil {
-			panic(err)
-		}
-		translated = tmpTranslated
-	}
-
-	// 一時ディレクトリパスを取得する
-	tempDir := os.TempDir()
-
-	// 一時ファイルを生成する
-	// webview2でHTMLとして表示するために拡張子を .html にする
-	tempFile, err := os.CreateTemp(tempDir, "translated*.html")
-	if err != nil {
-		panic(err)
-	}
-	defer tempFile.Close()
-	defer os.Remove(tempFile.Name())
-
-	// HTMLGeneratorを生成する
-	g := htmlgenerator.NewHTMLGenerator(t, translated, tempFile)
-
-	// HTMLGeneratorが保持する情報を元にHTMLを生成する
-	err = g.Generate()
+	// ここからメイン処理
+	// DryRunモードを考慮して翻訳結果を生成する
+	translated, err := util.GenerateTranslated(t, isDryRun)
 	if err != nil {
 		panic(err)
 	}
 
-	// 一時ファイルのパスを取得する
-	tempFilePath := tempFile.Name()
-	log.Printf("tempFilePath: %s", tempFilePath)
-
-	// 一時ファイルを閲覧する
-	err = webview2viewer.OpenFileWithWebview2(tempFilePath)
+	// 翻訳結果をwebview2で表示する
+	err = util.ShowTranslatedWithWebview2(t, translated)
 	if err != nil {
 		panic(err)
 	}
+
 }
