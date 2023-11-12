@@ -59,6 +59,9 @@ func newRequest(create completion.Create, apiKey string) (*http.Request, error) 
 	if err != nil {
 		return nil, err
 	}
+	if req == nil {
+		return nil, fmt.Errorf("req is nil")
+	}
 
 	// ヘッダーに Content-Type: application/json を設定する
 	req.Header.Set("Content-Type", "application/json")
@@ -78,6 +81,9 @@ func createChatCompletionHttpRequest(req *http.Request) (*http.Response, error) 
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
+	}
+	if resp == nil {
+		return nil, fmt.Errorf("resp is nil")
 	}
 	return resp, nil
 }
