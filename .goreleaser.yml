@@ -18,6 +18,4 @@ archives:
       - README*
       - src: ahk/translate.ahk
         dest: translate.ahk
-    format_overrides:
-      - goos: windows
-        format: zip
+        strip_parent: true
