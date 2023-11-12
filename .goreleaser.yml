@@ -6,6 +6,9 @@ builds:
       - windows
     goarch:
       - amd64
+    # ldflags を指定する
+    ldflags:
+      - -H windowsgui -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}} -X main.builtBy=goreleaser
 archives:
   - format_overrides:
     - goos: windows
