@@ -17,13 +17,17 @@ func main() {
 	// DEBUGログのプレフィックスを設定
 	log.SetPrefix("DEBUG: ")
 
-	// コマンドライン引数を解析する。 -t, -v オプションを定義する
+	// コマンドライン引数を解析する。 -t, -d, -v オプションを定義する
 	var t string
-	var isVerbose bool
+	var isDryRun, isVerbose bool
 
 	// t は 翻訳対象の文字列を表す
 	// デフォルト値は "Hello, World!" である
 	flag.StringVar(&t, "t", "Hello, World!", "translate target string")
+
+	// d は dry run モードを表す
+	// デフォルト値は false である
+	flag.BoolVar(&isDryRun, "d", false, "execute dry run mode")
 
 	// v はログを冗長に出力するモードを表す
 	// デフォルト値は false である
@@ -47,12 +51,19 @@ func main() {
 	}
 
 	// コマンドライン引数を出力する
-	log.Printf("t: %s, isVerbose: %t", t, isVerbose)
+	log.Printf("t: %s, isDryRun: %t isVerbose: %t", t, isDryRun, isVerbose)
 
-	// 翻訳する
-	translated, err := translate.Translate(t)
-	if err != nil {
-		panic(err)
+	// dry run モードの場合は仮の翻訳結果を表示する
+	var translated string
+	if isDryRun {
+		translated = "dry run モード 翻訳結果"
+	} else {
+		// 翻訳する
+		tmpTranslated, err := translate.Translate(t)
+		if err != nil {
+			panic(err)
+		}
+		translated = tmpTranslated
 	}
 
 	// 一時ディレクトリパスを取得する
