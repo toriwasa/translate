@@ -45,6 +45,10 @@ global lastTapTime := 0
         command := translateExePath . " -c"
         Run command
         ; MsgBox("second tap. tapCount: " . tapCount . ", currentTime: " . currentTime . ", lastTapTime: " . lastTapTime)
+        ; 翻訳結果のウィンドウが表示されるまで待機して、表示されたらアクティブにする
+        if (WinWait("Translate Result", , 3)) {
+            WinActivate
+        }
 
         ; 押下カウントをリセット
         tapCount := 0
