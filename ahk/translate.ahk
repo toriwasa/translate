@@ -15,7 +15,7 @@ global lastTapTime := 0
 
     global tapCount
     global lastTapTime
-    ; 起動後初回, 2連打処理実行後の初回, 初回から一定時間経過していた場合: 押下カウントをリセットして終了する
+    ; 起動後初回 OR 前回のタップから一定時間経過していた場合: 押下カウントをリセットして終了する
     if (currentTime - lastTapTime > 2000) {
         tapCount := 1
         ; MsgBox("delayed tap. tapCount: " . tapCount . ", currentTime: " . currentTime . ", lastTapTime: " . lastTapTime)
