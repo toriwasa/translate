@@ -1,0 +1,27 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>翻訳結果表示画面</title>
+</head>
+<body>
+    <h2>翻訳対象文字列</h2>
+    <p>{{ .Target }}</p>
+    <hr>
+    <h2>翻訳結果文字列</h2>
+    <p id="translated">{{ .Translated }}</p>
+    <script>
+        var translatedTextElement = document.getElementById('translated');
+        // 元々のテキストを取得
+        var originalText = translatedTextElement.textContent;
+        var dots = 0;
+
+        // 500ミリ秒ごとにドットを追加していく
+        setInterval(function() {
+            dots = (dots + 1) % 4;
+            var dotsText = '.'.repeat(dots);
+            translatedTextElement.textContent = originalText + dotsText;
+        }, 500);
+    </script>
+</body>
+</html>

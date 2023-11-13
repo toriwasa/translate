@@ -6,8 +6,17 @@ import (
 	"io"
 )
 
-//go:embed translate_result.html
+//go:embed translate_loading.html translate_result.html
 var embedFileSystem embed.FS
+
+// TemplateFileName は テンプレートHTMLファイル名を表す型
+type TemplateFileName string
+
+// HTMLファイル名を表す定数
+const (
+	TranslateLoading TemplateFileName = "translate_loading.html"
+	TranslateResult  TemplateFileName = "translate_result.html"
+)
 
 // 生成内容を表す構造体
 type HTMLGenerator struct {
@@ -29,25 +38,25 @@ func NewHTMLGenerator(target, translated string, writer io.Writer) HTMLGenerator
 }
 
 // Generate は HTMLGenerator が保持する情報を元にHTMLを生成する
-func (g HTMLGenerator) Generate() error {
+func (g HTMLGenerator) Generate(t TemplateFileName) error {
 	// 基礎となるテンプレートオブジェクトを生成する
 	baseTemplate := template.New("translateResult")
 
 	// 埋め込みファイルシステム経由でHTMLテンプレート定義を読み込む
-	templateFile, err := embedFileSystem.ReadFile("translate_result.html")
+	templateFile, err := embedFileSystem.ReadFile(string(t))
 	if err != nil {
 		return err
 	}
 
 	// HTMLテンプレート定義を元にした新しいテンプレートオブジェクトを生成する
-	t, err := baseTemplate.Parse(string(templateFile))
+	parsedTemplate, err := baseTemplate.Parse(string(templateFile))
 	if err != nil {
 		return err
 	}
 
 	// Writerの向き先にテンプレートを元にしたHTMLを生成する
 	// Writerへの副作用が発生する
-	err = t.Execute(*g.Writer, g)
+	err = parsedTemplate.Execute(*g.Writer, g)
 	if err != nil {
 		return err
 	}

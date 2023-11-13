@@ -80,10 +80,10 @@ func main() {
 	log.Printf("loadingHTMLFile: %s", loadingHTMLFile.Name())
 
 	// 結果待機用の htmlgenerator を生成する
-	loadingHTMLGenerator := htmlgenerator.NewHTMLGenerator(targetText, "翻訳結果を取得中...", loadingHTMLFile)
+	loadingHTMLGenerator := htmlgenerator.NewHTMLGenerator(targetText, "翻訳結果を取得中", loadingHTMLFile)
 
 	// HTMLGeneratorが保持する情報を元にHTMLを生成する
-	err = loadingHTMLGenerator.Generate()
+	err = loadingHTMLGenerator.Generate(htmlgenerator.TranslateLoading)
 	if err != nil {
 		panic(err)
 	}
@@ -149,7 +149,7 @@ func main() {
 		// 翻訳結果用の htmlgenerator を生成する
 		resultHTMLGenerator := htmlgenerator.NewHTMLGenerator(targetText, translated, translatedHTMLFile)
 		// HTMLGeneratorが保持する情報を元にHTMLを生成する
-		err = resultHTMLGenerator.Generate()
+		err = resultHTMLGenerator.Generate(htmlgenerator.TranslateResult)
 		if err != nil {
 			panic(err)
 		}
