@@ -23,6 +23,10 @@ jobs:
         shell: pwsh
         run: |
           mv build/*.exe $env:GITHUB_WORKSPACE
+      - name: debug
+        shell: pwsh
+        run: |
+          ls $env:GITHUB_WORKSPACE
   goreleaser:
     runs-on: ubuntu-latest
     needs: ahkbuild
@@ -44,6 +48,9 @@ jobs:
         with:
           app_id: ${{ secrets.APP_ID }}
           private_key: ${{ secrets.PRIVATE_KEY }}
+      - name: debug workspace
+        run: |
+          ls $GITHUB_WORKSPACE
       - name: copy ahk exe from workspace
         run: |
           cp $GITHUB_WORKSPACE/*.exe .
