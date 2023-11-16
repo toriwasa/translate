@@ -13,7 +13,7 @@ jobs:
       - name: Build with AHK v2 latest
         uses: nukdokplex/autohotkey-build@v0.1
         with:
-          version: latest
+          version: "v2.0.10"
           x64: true
           x86: false
           compression: upx
