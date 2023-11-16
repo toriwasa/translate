@@ -16,4 +16,4 @@ archives:
     files:
       - LICENSE*
       - README*
-      - translate_launcher.exe
+      - *.exe

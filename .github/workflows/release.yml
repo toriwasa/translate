@@ -22,7 +22,7 @@ jobs:
       - name: move exe to workspace
         shell: pwsh
         run: |
-          mv build/translate_launcher.exe $env:GITHUB_WORKSPACE
+          mv build/*.exe $env:GITHUB_WORKSPACE
   goreleaser:
     runs-on: ubuntu-latest
     needs: ahkbuild
@@ -46,7 +46,7 @@ jobs:
           private_key: ${{ secrets.PRIVATE_KEY }}
       - name: copy ahk exe from workspace
         run: |
-          cp $GITHUB_WORKSPACE/translate_launcher.exe .
+          cp $GITHUB_WORKSPACE/*.exe .
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v5
         with:
