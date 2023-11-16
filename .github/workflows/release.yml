@@ -17,7 +17,7 @@ jobs:
           x64: true
           x86: false
           compression: upx
-          in: "ahk/translate_launcher.ahk"
+          in: ahk
           out: build
       - name: move exe to workspace
         shell: pwsh
