@@ -16,5 +16,4 @@ archives:
     files:
       - LICENSE*
       - README*
-      - src: ahk/translate.ahk
-        strip_parent: true
+      - translate_launcher.exe

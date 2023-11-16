@@ -4,8 +4,28 @@ on:
     tags:
     - "v[0-9]+.[0-9]+.[0-9]+"
 jobs:
+  ahkbuild:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Build with AHK v2 latest
+        uses: nukdokplex/autohotkey-build@v0.1
+        with:
+          version: latest
+          x64: true
+          x86: false
+          compression: upx
+          in: "ahk/translate_launcher.ahk"
+          out: build
+      - name: move exe to workspace
+        shell: pwsh
+        run: |
+          mv build/translate_launcher.exe $env:GITHUB_WORKSPACE
   goreleaser:
     runs-on: ubuntu-latest
+    needs: ahkbuild
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -24,6 +44,9 @@ jobs:
         with:
           app_id: ${{ secrets.APP_ID }}
           private_key: ${{ secrets.PRIVATE_KEY }}
+      - name: copy ahk exe from workspace
+        run: |
+          cp $GITHUB_WORKSPACE/translate_launcher.exe .
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v5
         with:
