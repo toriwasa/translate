@@ -22,10 +22,11 @@ jobs:
       - name: move exe to workspace
         shell: pwsh
         run: |
-          mv build/*.exe $env:GITHUB_WORKSPACE
+          cp build/*.exe $env:GITHUB_WORKSPACE
       - name: debug
         shell: pwsh
         run: |
+          ls build
           ls $env:GITHUB_WORKSPACE
   goreleaser:
     runs-on: ubuntu-latest
@@ -51,6 +52,7 @@ jobs:
       - name: debug workspace
         run: |
           ls $GITHUB_WORKSPACE
+          ls $GITHUB_WORKSPACE/build
       - name: copy ahk exe from workspace
         run: |
           cp $GITHUB_WORKSPACE/*.exe .
