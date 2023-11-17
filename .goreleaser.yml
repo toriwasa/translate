@@ -16,5 +16,5 @@ archives:
     files:
       - LICENSE*
       - README*
-      - src: ahk-build/*.exe
+      - src: ahk-dist/*.exe
         strip_parent: true
