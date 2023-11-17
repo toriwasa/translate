@@ -25,7 +25,7 @@ func getAPIKey() (string, error) {
 // モデル応答を生成するための構造体を生成する
 func newCreate(text string) completion.Create {
 	// ChatGPT APIに翻訳を依頼する文字列を生成する
-	q := fmt.Sprintf("Translate this into Japanese. \n\n%s", text)
+	q := fmt.Sprintf("Please translate the text within the '=====' markers into Japanese. \n\n=====\n%s\n=====", text)
 	log.Printf("q: %s", q)
 
 	// モデル応答を生成するための構造体を生成する
