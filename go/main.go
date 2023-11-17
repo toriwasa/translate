@@ -117,12 +117,13 @@ func main() {
 		manager.Kill()
 	})
 
-	// ESC, Enter, Spaceキーでウィンドウを閉じる機能を追加する
+	// ESC, Enter, Space, Ctrl+Wキーでウィンドウを閉じる機能を追加する
 	w.Init(`
 	document.addEventListener("keydown", function(event) {
 		if (event.keyCode === 27 // ESC
 			|| event.keyCode === 13  // Enter
 			|| event.keyCode === 32 // Space
+			|| (event.ctrlKey && event.keyCode === 87) // Ctrl+W
 		) {
 			closeWebView(); // Goの関数を呼び出す
 		}
