@@ -19,13 +19,12 @@ jobs:
           compression: upx
           in: ahk
           out: ahk-build
-      - name: debug pwd
-        run: Get-Location
       - name: debug ls
         run:
-          Get-ChildItem -Recurse ahk-build
+          Get-ChildItem -Recurse .
       - name: debug ls
-        run: Get-ChildItem -Recurse $env:GITHUB_WORKSPACE
+        run:
+          Get-ChildItem $env:GITHUB_WORKSPACE/ahk-build
       # - name: Upload build directory
       #   uses: actions/upload-artifact@v3
       #   with:
