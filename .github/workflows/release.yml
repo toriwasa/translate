@@ -9,7 +9,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
       - name: Build with AHK v2 latest
         uses: nukdokplex/autohotkey-build@v0.1
         with:
@@ -19,12 +18,6 @@ jobs:
           compression: upx
           in: ahk
           out: ahk-dist
-      - name: debug ls
-        run:
-          Get-ChildItem -Recurse .
-      - name: debug ls
-        run:
-          Get-ChildItem $env:GITHUB_WORKSPACE/ahk-dist
       - name: Upload ahk-dist directory
         uses: actions/upload-artifact@v3
         with:
@@ -47,7 +40,7 @@ jobs:
       # - name: Run Go Tests
       #   run: GOOS=windows GOARCH=amd64 go test -v ./...
       - name: download ahk-dist directory
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: ahk-dist
           path: ahk-dist

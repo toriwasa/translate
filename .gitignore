@@ -1,1 +1,5 @@
+# Github Actionsで生成されるコンパイル済みahkファイルの出力先
+# GoReleaserはチェックアウト時からビルド時までにGitの状態が変化しているとエラーになる
+# 上記エラーを回避するためGit追跡対象から外しておく
+# 参考: https://goreleaser.com/errors/dirty/
 ahk-dist
