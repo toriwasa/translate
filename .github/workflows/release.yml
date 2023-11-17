@@ -50,7 +50,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: ahk-dist
-          path: ahk-dist
+          path: /tmp/ahk-dist
       - name: Generate GitHub Apps token
         id: generate
         uses: tibdex/github-app-token@v1
