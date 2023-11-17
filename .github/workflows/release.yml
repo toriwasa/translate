@@ -24,6 +24,8 @@ jobs:
       - name: debug ls
         run:
           Get-ChildItem -Recurse ahk-build
+      - name: debug ls
+        run: Get-ChildItem -Recurse $env:GITHUB_WORKSPACE
       # - name: Upload build directory
       #   uses: actions/upload-artifact@v3
       #   with:
