@@ -19,7 +19,8 @@
                 "seatonjiang.gitmoji-vscode",
                 "GitHub.vscode-github-actions",
                 "ms-vscode.live-server",
-                "thqby.vscode-autohotkey2-lsp"
+                "thqby.vscode-autohotkey2-lsp",
+                "vsls-contrib.gistfs"
             ]
         }
     }
